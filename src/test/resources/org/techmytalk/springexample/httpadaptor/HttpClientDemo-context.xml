@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans:beans xmlns="http://www.springframework.org/schema/integration"
+	xmlns:http="http://www.springframework.org/schema/integration/http"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:integration-file="http://www.springframework.org/schema/integration/file"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:stream="http://www.springframework.org/schema/integration/stream"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans   
+    http://www.springframework.org/schema/beans/spring-beans.xsd 
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd 
+    http://www.springframework.org/schema/integration/file  
+    http://www.springframework.org/schema/integration/file/spring-integration-file-2.0.xsd 
+    http://www.springframework.org/schema/integration 
+    http://www.springframework.org/schema/integration/spring-integration-2.2.xsd 
+    http://www.springframework.org/schema/integration/http  
+	http://www.springframework.org/schema/integration/http/spring-integration-http.xsd 
+    http://www.springframework.org/schema/integration/stream 
+    http://www.springframework.org/schema/integration/stream/spring-integration-stream-2.2.xsd">
+	<annotation-config />
+	<context:component-scan base-package="org.techmytalk.springexample.httpadaptor.*" />
+	<gateway id="requestGateway"
+		service-interface="org.techmytalk.springexample.httpadaptor.RequestGateway"
+		default-request-channel="requestChannel" />
+	<channel id="requestChannel" />
+	<bridge input-channel="requestChannel" output-channel="inboxfileinput" />
+	<integration-file:file-to-string-transformer
+		input-channel="inboxfileinput" output-channel="inboxDataChannel"
+		delete-files="false" />
+	<http:outbound-gateway request-channel="inboxDataChannel"
+		url="http://localhost:8080/httpAdapter/receiveGateway" http-method="POST" />
+</beans:beans>
